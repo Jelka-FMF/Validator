@@ -39,9 +39,7 @@ def encode_header(author: str, title: str, led_count: int, duration: int) -> byt
             b"\x02",  # start of text
             version.to_bytes(length=1, byteorder="big"),  # 1 byte for version
             led_count.to_bytes(length=2, byteorder="big"),  # 2 bytes for led_count
-            duration.to_bytes(
-                length=2, byteorder="big"
-            ),  # 2 bytes for duration (enough for up to 18 minutes at 60 fps)
+            duration.to_bytes(length=2, byteorder="big"),  # 2 bytes for duration (enough for up to 18 minutes at 60 fps)
             encode_string(author, maxlen=50),  # 1 to 50 bytes for author
             b"\x00",  # end of string
             encode_string(title, maxlen=50),  # 1 to 50 bytes for title
@@ -56,9 +54,7 @@ def decode_header(header: bytes) -> dict:
         raise TypeError(f"Expected type 'bytes', found type {type(header)}.")
 
     if len(header) < 1:
-        raise ValueError(
-            f"Header is too short, expected at least 9 bytes, found {len(header)}."
-        )
+        raise ValueError(f"Header is too short, expected at least 9 bytes, found {len(header)}.")
 
     if header[0] != 0x02 or header[-1] != 0x03:
         print(header)
@@ -92,9 +88,7 @@ def decode_header(header: bytes) -> dict:
 
 def encode_frame(frame: list, led_count: int) -> bytes:
     if len(frame) != led_count:
-        raise ValueError(
-            f"frame must have a value for every led, has {len(frame)}/{led_count}."
-        )
+        raise ValueError(f"frame must have a value for every led, has {len(frame)}/{led_count}.")
     if not all(len(rgb) == 3 and (isinstance(v, int) for v in rgb) for rgb in frame):
         raise ValueError("frame must have an rbg tuple of ints for values.")
 
@@ -112,9 +106,7 @@ def encode_frame(frame: list, led_count: int) -> bytes:
     return b"".join(
         (
             b"\x02",  # start of text
-            data.replace(b"\x02", b"\x01").replace(
-                b"\x03", b"\x04"
-            ),  # escape start and end of text
+            data.replace(b"\x02", b"\x01").replace(b"\x03", b"\x04"),  # escape start and end of text
             b"\x03",  # end of text
         )
     )
@@ -127,17 +119,12 @@ def decode_frame(frame: bytes, led_count: int, version: int) -> list:
 
     expected_length = 3 * led_count + 2  # 3 bytes per led + start and end of text
     if len(frame) != expected_length:
-        raise ValueError(
-            f"Frame is too short, expected exactly {expected_length} bytes, found {len(frame)}."
-        )
+        raise ValueError(f"Frame is too short, expected exactly {expected_length} bytes, found {len(frame)}.")
 
     if frame[0] != 0x02 or frame[-1] != 0x03:
         raise ValueError("Frame must start with 0x02 and end with 0x03.")
 
-    return [
-        tuple(frame[led_index + i] for i in range(3))
-        for led_index in range(led_count)
-    ]  # split into rgb tuples
+    return [tuple(frame[led_index + i] for i in range(3)) for led_index in range(led_count)]  # split into rgb tuples
 
 
 class DataSender:
@@ -194,25 +181,25 @@ class DataReceiver:
         self.user_buffer = b""  # not jelka data
         self.data_start = b"\x02"
         self.data_end = b"\x03"
-    
+
     def read(self):
         self.update_buffer()
         if not self.header:
             self.try_read_header()
         self.try_read_frame()
-    
+
     def update_buffer(self):
         user_add = []
         jelka_add = []
         for byte in self.input_file.read1():
             if self.mode == "user" and byte == 2:
                 self.mode = "jelka"
-            
+
             if self.mode == "jelka":
                 jelka_add.append(byte.to_bytes(length=1))
             elif self.mode == "user":
                 user_add.append(byte.to_bytes(length=1))
-            
+
             if self.mode == "jelka" and byte == 3:
                 self.mode = "user"
         self.user_buffer += b"".join(user_add)
@@ -221,39 +208,38 @@ class DataReceiver:
     def user_print(self, flush=True):
         print(self.user_buffer.decode(encoding="utf-8"), end="", flush=flush)
         self.user_buffer = b""
-    
+
     def try_read_header(self):
         header_end = self.jelka_buffer.find(self.data_end)
         if header_end != -1:
-            self.header = decode_header(self.jelka_buffer[0:header_end + 1])
+            self.header = decode_header(self.jelka_buffer[0 : header_end + 1])
             self.version = self.header["version"]
             self.duration = self.header["duration"]
             self.led_count = self.header["led_count"]
             self.author = self.header["author"]
             self.title = self.header["title"]
-            self.jelka_buffer = self.jelka_buffer[header_end + 1:]
+            self.jelka_buffer = self.jelka_buffer[header_end + 1 :]
 
     def try_read_frame(self):
         frame_end = self.jelka_buffer.find(self.data_end)
         frame_start = 0
         while frame_end != -1:
-            frame = decode_frame(self.jelka_buffer[frame_start:frame_end + 1], self.led_count, self.version)
+            frame = decode_frame(self.jelka_buffer[frame_start : frame_end + 1], self.led_count, self.version)
             self.frames.append(frame)
             frame_start = frame_end + 1
             frame_end = self.jelka_buffer.find(self.data_end, frame_start + 1)
-        self.jelka_buffer = self.jelka_buffer[frame_start + 1:]
+        self.jelka_buffer = self.jelka_buffer[frame_start + 1 :]
 
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         self.read()
         self.frame_count += 1
         if self.duration and self.frame_count > self.duration:
             raise StopIteration
-        
+
         if self.frames:
             return self.frames[min(self.frame_count - 1, len(self.frames) - 1)]
-        
-        return [(0, 0, 0)] * self.led_count
 
+        return [(0, 0, 0)] * self.led_count

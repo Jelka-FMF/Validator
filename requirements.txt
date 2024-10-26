@@ -1,2 +1,5 @@
 build
 twine
+ruff
+pyright
+pytest

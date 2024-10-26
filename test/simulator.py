@@ -4,12 +4,14 @@ import sys
 import time
 from validator.validator import DataReceiver
 
+
 def proj(point, cam):
     dy = point[1][0] - cam[1]
     if dy != 0:
         return ((point[0][0] - cam[0]) / dy, (point[2][0] - cam[2]) / dy, dy)
     else:
         return (0, 0, 1)
+
 
 def rotation(phi, tau):
     xy = array([[cos(phi), -sin(phi), 0], [sin(phi), cos(phi), 0], [0, 0, 1]])
@@ -32,9 +34,7 @@ def random_tree(n=300, origin=(0, 0, 0), height=200, max_width=120, min_width=60
 
 def draw_lucka(pygame, lucka, screen, size, color, scale):
     w, h = pygame.display.get_surface().get_size()
-    pygame.draw.circle(
-        screen, color, (w * lucka[0] * scale + w // 2, (-w * lucka[1] * scale + h // 2)), size + 3
-    )
+    pygame.draw.circle(screen, color, (w * lucka[0] * scale + w // 2, (-w * lucka[1] * scale + h // 2)), size + 3)
 
 
 def draw_line(pygame, p1, p2, screen, color, scale):
