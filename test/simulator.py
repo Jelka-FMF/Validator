@@ -2,7 +2,7 @@ from numpy import array, cos, sin, random
 from subprocess import Popen, PIPE
 import sys
 import time
-from validator.validator import DataReceiver
+from src.jelka_validator.main import DataReceiver
 
 
 def proj(point, cam):
@@ -137,17 +137,23 @@ class Simulation:
 if __name__ == "__main__":
     # Popen(["-m", "writer.py"], executable=sys.executable, stdout=PIPE)
     # Popen(["writer.exe"], stdout=PIPE)
-    with Popen(["-m", "writer.py"], executable=sys.executable, stdout=PIPE, bufsize=10000) as p:
+    with Popen(["-m", "test/writer.py"], executable=sys.executable, stdout=PIPE) as p:
         sim = Simulation()
         dr = DataReceiver(p.stdout)
         dr.read()
         # assert dr.header is not None
-        # print(dr.header)
         sim.init()
         time.sleep(1)
         while sim.running:
+            print(dr.header)
             c = next(dr)
+            print(len(c), c[0])
+            assert (all(c[i] == c[0] for i in range(len(c))))
+            #print("a")
             dr.user_print()
+            #print("a")
             sim.set_colors(dict(zip(range(len(c)), c)))
+            #print("a")
             sim.frame()
+            #print("a")
         sim.quit()
