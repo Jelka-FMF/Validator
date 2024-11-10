@@ -75,7 +75,7 @@ class BytesReader:
             return None
 
         text = self.jelka_buffer[0 : header_end + 1].decode(encoding="utf-8")
-        text = text.removeprefix("#")
+        text = text.lstrip("#")
         text = text.strip()
         header = decode_header(text)
 
@@ -104,7 +104,7 @@ class BytesReader:
         frames = []
         while frame_end != -1:
             text = self.jelka_buffer[frame_start : frame_end + 1].decode(encoding="utf-8")
-            text = text.removeprefix("#")
+            text = text.lstrip("#")
             text = text.strip()
 
             # Get the frame
