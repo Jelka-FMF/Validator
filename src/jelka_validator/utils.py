@@ -8,7 +8,7 @@ def to_duration(minutes=0, seconds=0, fps=60) -> int:
 
     Examples:
     >>> to_duration(minutes=3)
-    5400
+    10800
     >>> to_duration(minutes=3, seconds=30, fps=30)
     6300
     """

@@ -119,8 +119,8 @@ class BytesReader:
 
         return frames
 
-    def user_print(self, flush=True):
-        print(self.user_buffer.decode(encoding="utf-8"), end="", flush=flush)
+    def user_print(self, flush=True, end=""):
+        print(self.user_buffer.decode(encoding="utf-8"), end=end, flush=flush)
         self.user_buffer = b""
 
 
@@ -155,8 +155,8 @@ class DataReader:
     def update_buffer(self):
         self.bytes_reader.read_more(self.bytes_getter())
 
-    def user_print(self, flush=True):
-        self.bytes_reader.user_print(flush=flush)
+    def user_print(self, flush=True, end=""):
+        self.bytes_reader.user_print(flush=flush, end=end)
 
     def try_read_header(self):
         header = self.bytes_reader.try_get_header()
