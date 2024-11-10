@@ -3,3 +3,4 @@ twine
 ruff
 pyright
 pytest
+numpy

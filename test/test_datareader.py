@@ -1,3 +1,5 @@
+# type: ignore UnusedExpression
+
 import pytest
 
 from src.jelka_validator import DataReader
@@ -28,7 +30,7 @@ class BytesMaker:
         self.jelka = jelka or []
         self.led_count = led_count
 
-    def __add__(self, other: str | int):
+    def __add__(self, other: "str | int"):
         """Jelka data"""
         if isinstance(other, int):
             frame = random_frame(self.led_count, other)
@@ -124,18 +126,18 @@ class TestDataReader:
             dr.try_read_header()
 
         assert dr.header is None
-    
+
     def test_header_not_atomic(self):
         data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=1, fps=60)
         h = data.entries[0]
-        data.entries[0] = h[:len(h) // 2]
+        data.entries[0] = h[: len(h) // 2]
 
         dr = DataReader(data.read)
         dr.update()
 
         assert dr.header is None
 
-        data.entries.insert(1, h[len(h) // 2:])
+        data.entries.insert(1, h[len(h) // 2 :])
         dr.update()
 
         assert dr.header is not None
@@ -169,7 +171,7 @@ class TestDataReader:
         dr.user_print()
         out, err = capfd.readouterr()
         assert out == "This is a random comment before everythingabcThis is a random commentnst\nhmhm"
-    
+
     def test_frames(self):
         data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=4, fps=60) + 0 + 1
 
@@ -181,7 +183,7 @@ class TestDataReader:
             if i == 1:
                 # add some more frames
                 data + 2 + 3
-    
+
     def test_frames_missing(self):
         data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=4, fps=60) + 0 + 1
 
@@ -190,9 +192,9 @@ class TestDataReader:
         for i, frame in enumerate(dr):
             # missing frames should be the last avaiable frame
             assert frame == data.jelka[min(i, len(data.jelka) - 1)]
-        
+
         assert len(dr.frames) == 2
-    
+
     def test_no_frames(self):
         data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=5, duration=4, fps=60)
 
@@ -200,7 +202,7 @@ class TestDataReader:
 
         for frame in dr:
             assert frame == [(0, 0, 0)] * 5
-    
+
     def test_frames_late(self):
         """First frames come after they were required, the last two frames never come."""
 
@@ -215,28 +217,28 @@ class TestDataReader:
                 data + 0 + 1
             if i >= 2:
                 assert frame == random_frame(5, 1)
-    
+
     def test_invalid_frame(self):
         data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=4, fps=60)
         data.entries.append("#Invalid frame\n")
-        
+
         dr = DataReader(data.read)
 
         with pytest.raises(ValueError):
             dr.update()
-    
+
     def test_frame_not_atomic(self):
         data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=4, fps=60) + 0
-        
+
         dr = DataReader(data.read)
 
         # cut the frame in half
         f = data.entries[-1]
-        data.entries[-1] = f[:len(f) // 2]
+        data.entries[-1] = f[: len(f) // 2]
 
         dr.update()
         assert dr.frames == []
-        data.entries.append(f[len(f) // 2:])
+        data.entries.append(f[len(f) // 2 :])
         dr.update()
         assert dr.frames == [data.jelka[0]]
 

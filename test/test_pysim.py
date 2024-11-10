@@ -11,7 +11,7 @@ if __name__ == "__main__":
     # Popen(["writer.exe"], stdout=PIPE)
     with Popen(["-m", "test/writer.py"], executable=sys.executable, stdout=PIPE, bufsize=10000) as p:
         sim = Simulation()
-        dr = DataReader(p.stdout.read1)
+        dr = DataReader(p.stdout.read1)  # type: ignore
         dr.update()
         # assert dr.header is not None
         sim.init()

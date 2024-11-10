@@ -43,8 +43,8 @@ class BytesReader:
         self.mode = "user"
         self.jelka_buffer = b""
         self.user_buffer = b""
-        self.version = None
-        self.led_count = None
+        self.version: "None | int" = None
+        self.led_count: "None | int" = None
 
     def read_more(self, inp: bytes):
         user_add = []  # new other stuff
@@ -65,7 +65,7 @@ class BytesReader:
         self.user_buffer += b"".join(user_add)
         self.jelka_buffer += b"".join(jelka_add)
 
-    def try_get_header(self) -> None | dict:
+    def try_get_header(self) -> "None | dict":
         # find the end of the header (newline)
         header_end = self.jelka_buffer.find(10)
         if header_end == -1:
@@ -91,6 +91,7 @@ class BytesReader:
     def try_get_frames(self) -> list:
         if self.version is None:
             raise ValueError("Header must be read before frames.")
+        self.version  # type: int
 
         # find the end of the frame (newline)
         frame_end = self.jelka_buffer.find(10)
@@ -107,7 +108,7 @@ class BytesReader:
             text = text.strip()
 
             # Get the frame
-            frame = decode_frame(text, self.led_count, self.version)
+            frame = decode_frame(text, self.led_count, self.version)  # type: ignore
             frames.append(frame)
 
             # find the start and the end of the next frame

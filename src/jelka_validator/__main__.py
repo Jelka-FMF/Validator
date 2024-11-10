@@ -3,9 +3,11 @@ import json
 
 
 if __name__ == "__main__":
-    print("This module helps you write headers so you can copy paste it into your program."
-          "There are 500 LEDs, 60 fps and default duration of 3 minutes (10800 frames).\n"
-          "If some characters are changed to something like \\u010d or some \\ are added it is correct.")
+    print(
+        "This module helps you write headers so you can copy paste it into your program."
+        "There are 500 LEDs, 60 fps and default duration of 3 minutes (10800 frames).\n"
+        "If some characters are changed to something like \\u010d or some \\ are added it is correct."
+    )
     author = input("Author: ")
     title = input("Title: ")
     school = input("School: ")

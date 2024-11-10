@@ -67,7 +67,7 @@ class Simulation:
                 assert all(0 <= c[i] <= 255 for i in range(3))
         except AssertionError:
             self.running = False
-            raise ValueError(f"Wrong shape for color: ({i}: {c})") from None
+            raise ValueError(f"Wrong shape for color: ({i}: {c})") from None  # type: ignore
         self.colors = {pk: tuple(color) for pk, color in colors.items()}
 
     def init(self):
@@ -128,4 +128,3 @@ class Simulation:
     def quit(self):
         self.running = False
         self.pygame.quit()
-
