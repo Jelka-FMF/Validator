@@ -22,7 +22,7 @@ def encode_header(author: str, title: str, school: str, led_count: int, duration
     Examples:
     >>> encode_header("John Doe", "My Title", "My School", led_count=500, duration=5400, fps=60)
     '{"version": 0, "led_count": 500, "duration": 5400, "fps": 60, "author": "John Doe", "title": "My Title", "school": "My School"}'
-    """
+    """  # noqa E501
 
     if not isinstance(led_count, int):
         raise TypeError(f"led_count must be int, found {type(led_count)}.")
@@ -57,9 +57,9 @@ def decode_header(header: str) -> dict:
 
     Examples:
     >>> header = {"author": "John Doe", "title": "My Title", "school": "My School", "led_count": 500, "duration": 5400, "fps": 60}
-    >>> decode_header(encode_header(**header)) == header | {"version": 0}
+    >>> decode_header(encode_header(**header)) == dict(header, version=0)
     True
-    """
+    """  # noqa E501
 
     json_header = json.loads(header)
     if "version" not in json_header:

@@ -29,7 +29,7 @@ For example a 3 LED frame with values (0, 1, 2), (3, 4, 5), (0, 150, 255) would 
 "#0001020304050096ff\n".
 
 All lines that are not prefixed with a "#" are considered user output and
-can be printed to stdout."""
+can be printed to stdout."""  # noqa E501
 
 from .utils import decode_header, decode_frame
 
@@ -54,9 +54,9 @@ class BytesReader:
                 self.mode = "jelka"
 
             if self.mode == "jelka":
-                jelka_add.append(byte.to_bytes(length=1))
+                jelka_add.append(byte.to_bytes(length=1, byteorder="big"))
             elif self.mode == "user":
-                user_add.append(byte.to_bytes(length=1))
+                user_add.append(byte.to_bytes(length=1, byteorder="big"))
 
             # Things that can are used for newlines
             if self.mode == "jelka" and byte in (10, 13):

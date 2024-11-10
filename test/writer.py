@@ -2,7 +2,6 @@ import time
 import sys
 
 sys.path.append("/home/jostsmrt/Documents/Validator")
-print(sys.path, file=sys.stderr)
 
 from src.jelka_validator.datawriter import DataWriter
 
