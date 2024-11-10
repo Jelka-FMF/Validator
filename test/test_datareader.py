@@ -124,6 +124,21 @@ class TestDataReader:
             dr.try_read_header()
 
         assert dr.header is None
+    
+    def test_header_not_atomic(self):
+        data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=1, fps=60)
+        h = data.entries[0]
+        data.entries[0] = h[:len(h) // 2]
+
+        dr = DataReader(data.read)
+        dr.update()
+
+        assert dr.header is None
+
+        data.entries.insert(1, h[len(h) // 2:])
+        dr.update()
+
+        assert dr.header is not None
 
     def test_frame(self):
         data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=1, fps=60) + 0
@@ -209,6 +224,42 @@ class TestDataReader:
 
         with pytest.raises(ValueError):
             dr.update()
+    
+    def test_frame_not_atomic(self):
+        data = header("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=1, duration=4, fps=60) + 0
+        
+        dr = DataReader(data.read)
+
+        # cut the frame in half
+        f = data.entries[-1]
+        data.entries[-1] = f[:len(f) // 2]
+
+        dr.update()
+        assert dr.frames == []
+        data.entries.append(f[len(f) // 2:])
+        dr.update()
+        assert dr.frames == [data.jelka[0]]
+
+        # last byte is missing
+        data + 1
+
+        f = data.entries[-1]
+        data.entries[-1] = f[:-2]
+        dr.update()
+        assert dr.frames == [data.jelka[0]]
+        data.entries.append(f[-2:])
+        dr.update()
+        assert dr.frames == [data.jelka[0], data.jelka[1]]
+
+        # first byte is missing
+        data + 2
+
+        f = data.entries[-1]
+        data.entries[-1] = f[1]
+        dr.update()
+        assert dr.frames == [data.jelka[0], data.jelka[1]]
+        data.entries.append(f[1:])
+        dr.update()
 
     def test_all_basic(self):
         led_count = 3
