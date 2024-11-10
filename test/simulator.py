@@ -1,8 +1,4 @@
 from numpy import array, cos, sin, random
-from subprocess import Popen, PIPE
-import sys
-import time
-from src.jelka_validator.main import DataReceiver
 
 
 def proj(point, cam):
@@ -133,27 +129,3 @@ class Simulation:
         self.running = False
         self.pygame.quit()
 
-
-if __name__ == "__main__":
-    # Popen(["-m", "writer.py"], executable=sys.executable, stdout=PIPE)
-    # Popen(["writer.exe"], stdout=PIPE)
-    with Popen(["-m", "test/writer.py"], executable=sys.executable, stdout=PIPE) as p:
-        sim = Simulation()
-        dr = DataReceiver(p.stdout)
-        dr.read()
-        # assert dr.header is not None
-        sim.init()
-        time.sleep(1)
-        while sim.running:
-            print(dr.header)
-            c = next(dr)
-            print(len(c), c[0])
-            assert (all(c[i] == c[0] for i in range(len(c))))
-            #print("a")
-            dr.user_print()
-            #print("a")
-            sim.set_colors(dict(zip(range(len(c)), c)))
-            #print("a")
-            sim.frame()
-            #print("a")
-        sim.quit()
