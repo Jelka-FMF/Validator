@@ -96,6 +96,8 @@ class BytesReader:
         frame_end = self.jelka_buffer.find(10)
         if frame_end == -1:
             frame_end = self.jelka_buffer.find(13)
+        if frame_end == -1:
+            return []
 
         frame_start = 0
         frames = []
