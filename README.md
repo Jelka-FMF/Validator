@@ -22,6 +22,9 @@ be used for development requirements.
 Similarly `README.md` is for GitHub. To update what people see
 on index change `PackageREADME.md`.
 
+It is reasonable to support Python 3.8 and above. Fo this reason do
+not use type hints with subscripts (For example: `l: list[int] = []`).
+
 ### Building and publishing a package
 You can build the package by running the following command in the 
 same directory as `pyproject.toml`:
@@ -49,4 +52,20 @@ including the pypi- prefix.
 To install library from the TestPyPi you ca use:
 ```sh
 python3 -m pip install --index-url https://test.pypi.org/simple/ jelka_validator --extra-index-url https://pypi.org/simple poirot
+```
+
+# Linting and testing
+To run the linter you can use:
+```sh
+ruff check
+```
+Replace `check` to tell the formatter to fix your code.
+
+To typecheck the code use:
+```sh
+pyright
+```
+and to run tests:
+```sh
+pytest --doctest-modules
 ```

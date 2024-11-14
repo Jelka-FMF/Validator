@@ -1,2 +1,7 @@
 build
 twine
+ruff
+pyright
+pytest
+numpy
+pygame
