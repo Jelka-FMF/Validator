@@ -3,31 +3,16 @@
 import json
 
 
-def to_duration(minutes=0, seconds=0, fps=60) -> int:
-    """Converts minutes and seconds to a duration in frames.
+def encode_header(led_count: int, fps: int) -> str:
+    """led_count must be an integer.
 
     Examples:
-    >>> to_duration(minutes=3)
-    10800
-    >>> to_duration(minutes=3, seconds=30, fps=30)
-    6300
+    >>> encode_header(led_count=500, fps=60)
+    '{"version": 0, "led_count": 500, "fps": 60}'
     """
-    return (minutes * 60 + seconds) * fps
-
-
-def encode_header(author: str, title: str, school: str, led_count: int, duration: int, fps: int) -> str:
-    """author and title can be any alpha-numeric utf-8 string and can also include spaces.
-    led_count must be an integer. duration is number of frames.
-
-    Examples:
-    >>> encode_header("John Doe", "My Title", "My School", led_count=500, duration=5400, fps=60)
-    '{"version": 0, "led_count": 500, "duration": 5400, "fps": 60, "author": "John Doe", "title": "My Title", "school": "My School"}'
-    """  # noqa E501
 
     if not isinstance(led_count, int):
         raise TypeError(f"led_count must be int, found {type(led_count)}.")
-    if not isinstance(duration, int):
-        raise TypeError(f"duration must be int, found {type(duration)}.")
     if not isinstance(fps, int):
         raise TypeError(f"fps must be int, found {type(fps)}.")
 
@@ -37,11 +22,7 @@ def encode_header(author: str, title: str, school: str, led_count: int, duration
         {
             "version": version,
             "led_count": led_count,
-            "duration": duration,
             "fps": fps,
-            "author": str(author),
-            "title": str(title),
-            "school": str(school),
         },
         indent=None,
     )
@@ -56,18 +37,18 @@ def decode_header(header: str) -> dict:
     Older versions will be supported as long as possible.
 
     Examples:
-    >>> header = {"author": "John Doe", "title": "My Title", "school": "My School", "led_count": 500, "duration": 5400, "fps": 60}
+    >>> header = {"led_count": 500, "fps": 60}
     >>> decode_header(encode_header(**header)) == dict(header, version=0)
     True
-    """  # noqa E501
+    """
 
     json_header = json.loads(header)
     if "version" not in json_header:
         raise ValueError("Header must contain a version.")
 
     if json_header["version"] == 0:
-        if not all(key in json_header for key in ("led_count", "duration", "fps", "author", "title", "school")):
-            raise ValueError("Header (version 0) must contain led_count, duration, fps, author, title and school.")
+        if not all(key in json_header for key in ("led_count", "fps")):
+            raise ValueError("Header (version 0) must contain led_count and fps.")
     else:
         raise ValueError(f"Unsupported header version: {json_header['version']}.")
 

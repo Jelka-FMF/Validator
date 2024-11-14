@@ -7,7 +7,7 @@ from src.jelka_validator.datawriter import DataWriter
 
 lc = 500
 n = 5400
-ds = DataWriter("Jošt Smrtnik", "Najboljši vzorec", "FMF", led_count=lc, duration=n, fps=60)
+ds = DataWriter(led_count=lc, fps=60)
 t = time.time()
 for i in range(n):
     ds.write_frame([(i % 256, i % 256, i % 256)] * lc)

@@ -9,17 +9,13 @@ The header starts with a "#" and must be in a single line.
 It can be any JSON object with the following keys
 For version 0:
 - version: 0
-- author: str
-- title: str
-- school: str
-- duration: int
 - led_count: int
 - fps: int
 
 Current version is 0. Older versions will be supported as long as possible.
 
 An example header:
-'#{"version": 0, "author": "John Doe", "title": "Super Title", "school": "My School", "led_count": 500, "duration": 5400, "fps": 60}\n'
+'#{"version": 0, "led_count": 500, "fps": 60}\n'
 
 After the header, there are frames. Each frame is a single line prefixed
 by a "#". For every LED there are 3 values r, g, b - hex values 00-ff (0 - 255).
@@ -29,7 +25,7 @@ For example a 3 LED frame with values (0, 1, 2), (3, 4, 5), (0, 150, 255) would 
 "#0001020304050096ff\n".
 
 All lines that are not prefixed with a "#" are considered user output and
-can be printed to stdout."""  # noqa E501
+can be printed to stdout."""
 
 from .utils import decode_header, decode_frame
 
@@ -135,7 +131,6 @@ class DataReader:
 
         # Header values
         self.version = None
-        self.duration = None
         self.led_count = None
         self.fps = None
 
@@ -166,7 +161,6 @@ class DataReader:
         if header:
             self.header = header
             self.version = header["version"]
-            self.duration = header["duration"]
             self.led_count = header["led_count"]
             self.fps = header["fps"]
 
@@ -184,8 +178,6 @@ class DataReader:
         self.update()
 
         self.frame_count += 1
-        if self.duration and self.frame_count > self.duration:
-            raise StopIteration
 
         if self.frames:
             # best apporximation of the present

@@ -12,7 +12,7 @@ void printhex(int x) {
 
 
 int main() {
-    cout << "#{\"version\": 0, \"led_count\": 500, \"duration\": 10800, \"fps\": 60, \"author\": \"Jo\\u0161t\", \"title\": \"\\u010d\\u0161\\u0111\\u010d\\u010dsmf?=!9\\\"'\", \"school\": \"O\\u0160 .-,\"}\n" << endl;
+    cout << "#{\"version\": 0, \"led_count\": 500, \"fps\": 60}\n" << endl;
 
     for (int frame = 0; frame < 10800; frame++) {
         cout << "#";
