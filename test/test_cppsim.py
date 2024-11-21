@@ -1,14 +1,14 @@
-from test.simulator import Simulation
+from simulator import Simulation
 
 from subprocess import Popen, PIPE
 import time
-from src.jelka_validator.datareader import DataReader
+from jelka_validator.datareader import DataReader
 
 
 if __name__ == "__main__":
     # Popen(["-m", "writer.py"], executable=sys.executable, stdout=PIPE)
     # Popen(["writer.exe"], stdout=PIPE)
-    with Popen(["./test/writer"], stdout=PIPE, bufsize=10000) as p:
+    with Popen(["./writer"], stdout=PIPE, bufsize=10000) as p:
         sim = Simulation()
         dr = DataReader(p.stdout.read1)  # type: ignore
         dr.update()

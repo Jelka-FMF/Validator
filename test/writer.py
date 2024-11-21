@@ -1,9 +1,7 @@
 import time
 import sys
 
-sys.path.append("/home/jostsmrt/Documents/Validator")
-
-from src.jelka_validator.datawriter import DataWriter
+from jelka_validator.datawriter import DataWriter
 
 lc = 500
 n = 5400

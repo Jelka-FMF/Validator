@@ -69,3 +69,9 @@ and to run tests:
 ```sh
 pytest --doctest-modules
 ```
+
+To test things manually use the following command at toplevel:
+```sh
+pip install -e .
+```
+Then you can run `test_cpp.py` and `test_pysim.py` inside `test/` directory.
