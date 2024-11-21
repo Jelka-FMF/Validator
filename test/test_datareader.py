@@ -139,14 +139,7 @@ class TestDataReader:
         assert dr.frames == [data.jelka[0]]
 
     def test_comments(self, capfd):
-        data = (
-            header(led_count=1, fps=60)
-            + "abc"
-            + 0
-            + "This is a random comment"
-            + "nst\n"
-            + "hmhm"
-        )
+        data = header(led_count=1, fps=60) + "abc" + 0 + "This is a random comment" + "nst\n" + "hmhm"
         data.entries.insert(0, "This is a random comment before everything")
         data.user.insert(0, "This is a random comment before everything")
 
@@ -263,15 +256,7 @@ class TestDataReader:
     def test_all_basic(self):
         led_count = 3
         duration = 4
-        data = (
-            header(led_count=led_count, fps=60)
-            + 0
-            + "Random text"
-            + 1
-            + 2
-            + 4
-            + "jabfhsb"
-        )
+        data = header(led_count=led_count, fps=60) + 0 + "Random text" + 1 + 2 + 4 + "jabfhsb"
 
         dr = DataReader(data.copy().read)
 
@@ -293,4 +278,3 @@ class TestDataReader:
                 break
 
             assert frame == data.jelka[framei]
-

@@ -1,5 +1,4 @@
 import time
-import sys
 
 from jelka_validator.datawriter import DataWriter
 
