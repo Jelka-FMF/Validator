@@ -39,19 +39,24 @@ dist/
 ```
 
 To securely upload your project, you’ll need a PyPI API token.
-It can be created [here](https://test.pypi.org/manage/account/#api-tokens) for TestPyPI. (TODO: actual PyPI).
+It can be created [here](https://test.pypi.org/manage/account/#api-tokens) for TestPyPI
+and [here](https://pypi.org/manage/account/#api-tokens) for PyPI.
 
 Run Twine to upload all of the archives under dist:
 ```sh
-python3 -m twine upload --repository testpypi dist/*
+python3 -m twine upload dist/*
 ```
 You will be prompted for a username and password. For the 
 username, use __token__. For the password, use the token value, 
 including the pypi- prefix.
 
+To install library from the PyPi you ca use:
+```
+python3 -m pip install jelka-validator
+
 To install library from the TestPyPi you ca use:
 ```sh
-python3 -m pip install --index-url https://test.pypi.org/simple/ jelka_validator --extra-index-url https://pypi.org/simple poirot
+python3 -m pip install --index-url https://test.pypi.org/simple/ jelka-validator --extra-index-url https://pypi.org/simple poirot
 ```
 
 # Linting and testing
