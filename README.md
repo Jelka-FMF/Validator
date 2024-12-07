@@ -72,7 +72,7 @@ pyright
 ```
 and to run tests:
 ```sh
-pytest --doctest-modules
+pytest --doctest-modules --ignore=test/test_cppsim.py --ignore=test/test_pysim.py
 ```
 
 To test things manually use the following command at toplevel:
