@@ -28,6 +28,8 @@ All lines that are not prefixed with a "#" are considered user output and
 can be printed to stdout."""
 
 from .utils import decode_header, decode_frame
+import os
+linesepb = os.linesep.encode(encoding="utf-8")
 
 
 class BytesReader:
@@ -45,7 +47,13 @@ class BytesReader:
     def read_more(self, inp: bytes):
         user_add = []  # new other stuff
         jelka_add = []  # new jelka data
-        for byte in inp:
+
+        if not inp:
+            return
+        
+        i = 0
+        while i < len(inp):
+            byte = inp[i]
             if self.mode == "user" and byte == ord("#"):
                 self.mode = "jelka"
 
@@ -55,17 +63,20 @@ class BytesReader:
                 user_add.append(byte.to_bytes(length=1, byteorder="big"))
 
             # Things that can are used for newlines
-            if self.mode == "jelka" and byte in (10, 13):
+            if self.mode == "jelka" and inp[i : i + len(linesepb)] == linesepb:
                 self.mode = "user"
+                jelka_add.append(linesepb[1:])
+                i += len(linesepb)
+                continue
+            
+            i += 1
 
         self.user_buffer += b"".join(user_add)
         self.jelka_buffer += b"".join(jelka_add)
 
     def try_get_header(self) -> "None | dict":
         # find the end of the header (newline)
-        header_end = self.jelka_buffer.find(10)
-        if header_end == -1:
-            header_end = self.jelka_buffer.find(13)
+        header_end = self.jelka_buffer.find(linesepb)
 
         if header_end == -1:
             return None
@@ -90,9 +101,7 @@ class BytesReader:
         self.version  # type: int
 
         # find the end of the frame (newline)
-        frame_end = self.jelka_buffer.find(10)
-        if frame_end == -1:
-            frame_end = self.jelka_buffer.find(13)
+        frame_end = self.jelka_buffer.find(linesepb)
         if frame_end == -1:
             return []
 
@@ -100,21 +109,19 @@ class BytesReader:
         frames = []
         while frame_end != -1:
             text = self.jelka_buffer[frame_start : frame_end + 1].decode(encoding="utf-8")
+            text = text.strip(os.linesep)
             text = text.lstrip("#")
-            text = text.strip()
 
             # Get the frame
             frame = decode_frame(text, self.led_count, self.version)  # type: ignore
             frames.append(frame)
 
             # find the start and the end of the next frame
-            frame_start = frame_end + 1
-            frame_end = self.jelka_buffer.find(10, frame_start + 1)
-            if frame_end == -1:
-                frame_end = self.jelka_buffer.find(13, frame_start + 1)
+            frame_start = frame_end + len(linesepb)
+            frame_end = self.jelka_buffer.find(linesepb, frame_start + 1)
 
         # remove what has already been used
-        self.jelka_buffer = self.jelka_buffer[frame_start + 1 :]
+        self.jelka_buffer = self.jelka_buffer[frame_start + len(linesepb) :]
 
         return frames
 
