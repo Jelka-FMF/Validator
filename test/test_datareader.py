@@ -6,6 +6,7 @@ from src.jelka_validator import DataReader
 from src.jelka_validator.utils import encode_header, encode_frame
 
 from random import Random
+from os import linesep
 import json
 
 
@@ -17,7 +18,7 @@ def random_frame(led_count, seed):
 
 
 def header(led_count, fps):
-    hd = "#" + encode_header(led_count, fps) + "\n"
+    hd = "#" + encode_header(led_count, fps) + linesep
     return BytesMaker(led_count, [hd], user=[], jelka=[])
 
 
@@ -35,7 +36,7 @@ class BytesMaker:
         if isinstance(other, int):
             frame = random_frame(self.led_count, other)
             self.jelka.append(frame)
-            self.entries.append("#" + encode_frame(frame, self.led_count) + "\n")
+            self.entries.append("#" + encode_frame(frame, self.led_count) + linesep)
         else:
             self.entries.append(other)
             self.user.append(other)
@@ -60,7 +61,6 @@ class TestDataReader:
 
         dr = DataReader(data.read)
         dr.update()
-
         assert dr.header == {
             "led_count": 1,
             "fps": 60,
@@ -81,7 +81,7 @@ class TestDataReader:
 
     def test_comment_header(self):
         data = header(led_count=500, fps=60)
-        data.entries.insert(0, "This is a random comment\n")
+        data.entries.insert(0, "This is a random comment" + linesep)
 
         dr = DataReader(data.read)
         dr.update()
@@ -94,7 +94,7 @@ class TestDataReader:
 
     def test_invalid_header(self):
         data = header(led_count=1, fps=60)
-        data.entries[0] = "#Invalid header\n"
+        data.entries[0] = "#Invalid header" + linesep
 
         dr = DataReader(data.read)
         dr.update_buffer()
@@ -106,7 +106,7 @@ class TestDataReader:
     def test_invalid_header_values(self):
         data = header(led_count=1, fps=60)
         d = {"abc": 1}
-        data.entries[0] = f"#{json.dumps(d)}\n"
+        data.entries[0] = f"#{json.dumps(d)}" + linesep
 
         dr = DataReader(data.read)
         dr.update_buffer()
@@ -139,6 +139,7 @@ class TestDataReader:
         assert dr.frames == [data.jelka[0]]
 
     def test_comments(self, capfd):
+        # Here we actually print stuff, so newline must be used normally
         data = header(led_count=1, fps=60) + "abc" + 0 + "This is a random comment" + "nst\n" + "hmhm"
         data.entries.insert(0, "This is a random comment before everything")
         data.user.insert(0, "This is a random comment before everything")
@@ -210,7 +211,7 @@ class TestDataReader:
 
     def test_invalid_frame(self):
         data = header(led_count=1, fps=60)
-        data.entries.append("#Invalid frame\n")
+        data.entries.append("#Invalid frame" + linesep)
 
         dr = DataReader(data.read)
 
