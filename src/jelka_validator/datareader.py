@@ -121,7 +121,7 @@ class BytesReader:
             frame_end = self.jelka_buffer.find(linesepb, frame_start + 1)
 
         # remove what has already been used
-        self.jelka_buffer = self.jelka_buffer[frame_start + len(linesepb) :]
+        self.jelka_buffer = self.jelka_buffer[frame_start:]
 
         return frames
 
